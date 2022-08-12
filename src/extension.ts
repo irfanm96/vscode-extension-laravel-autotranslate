@@ -26,10 +26,11 @@ export function activate(context: vscode.ExtensionContext) {
 			selectedText = removeNewLines(selectedText);
 
             getFileName().then((fileName) =>  {
-                console.log(fileName);
-                replaceText(`@lang('messages.${selectedText}')`);
+                getKeyName().then((keyName)=>{
+                    replaceText(`__('${fileName}.${keyName}')`);
+                    addToLanguageFile(selectedText as string,fileName as string,keyName as string);
+                });
 
-                addToLanguageFile(selectedText as string,fileName as string);
             });
 
 
@@ -52,7 +53,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 			replaceText(`__('messages.${selectedText}')`);
 
-			addToLanguageFile(selectedText as string,'a');
+			addToLanguageFile(selectedText as string,'a','a');
 		}
 	});
 
@@ -80,23 +81,39 @@ function replaceText(replacedText: string) {
 
 async function getFileName() {
 
-    const searchQuery = await vscode.window.showInputBox({
-        placeHolder: "Search query",
-        prompt: "Search my snippets on Codever",
+    const fileName = await vscode.window.showInputBox({
+        placeHolder: "File Name",
+        prompt: "Enter File Name",
         value: ''
     });
 
-    if(searchQuery === ''){
-        console.log(searchQuery);
+    if(fileName === ''){
+        console.log(fileName);
         vscode.window.showErrorMessage('A search query is mandatory to execute this action');
       }
 
-    if(searchQuery !== undefined){
-        return searchQuery+".php";
+    if(fileName !== undefined){
+        return fileName+".php";
+    }
+}
+async function getKeyName() {
+
+    const keyName = await vscode.window.showInputBox({
+        placeHolder: "Key Name",
+        prompt: "Enter key name of the string",
+        value: ''
+    });
+
+    if(keyName === ''){
+        vscode.window.showErrorMessage('A Key name is mandatory to execute this action');
+      }
+
+    if(keyName !== undefined){
+        return keyName;
     }
 }
 
-function addToLanguageFile(selectedText: string, fileName: string)
+function addToLanguageFile(selectedText: string, fileName: string,keyName: string)
 {
 	const editor = vscode.window.activeTextEditor;
 	let projectFolder = vscode.workspace.getWorkspaceFolder(editor?.document.uri as vscode.Uri);
@@ -112,7 +129,7 @@ function addToLanguageFile(selectedText: string, fileName: string)
 		{
 			var endOfArray = resourceContent.indexOf(']');
 			var newContent = resourceContent.slice(0, endOfArray-2); // assuming there is a carriage return before the ]
-			newContent += `,\r\n\t"${selectedText}" => "${selectedText}"\r\n];`;
+			newContent += `,\r\n\t"${keyName}" => "${selectedText}"\r\n];`;
 
 			writeFileSync(resourceFilePath, newContent);
 		}
