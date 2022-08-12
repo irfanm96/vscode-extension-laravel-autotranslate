@@ -151,7 +151,7 @@ function addToLanguageFile(selectedText: string, fileName: string,keyName: strin
 		{
 			var endOfArray = resourceContent.indexOf(']');
 			var newContent = resourceContent.slice(0, endOfArray-1); // assuming there is a carriage return before the ]
-			newContent += `,\r\n\t'${keyName}' => '${selectedText}'\r\n];`;
+			newContent += `,\r\t'${keyName}' => '${selectedText}'\r];`;
 
 			writeFileSync(resourceFilePath, newContent);
 		}
