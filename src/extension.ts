@@ -27,7 +27,7 @@ export function activate(context: vscode.ExtensionContext) {
 
             getFileName().then((fileName) =>  {
                 getKeyName().then((keyName)=>{
-                    replaceText(`__('${fileName}.${keyName}')`);
+                    replaceText(`{{ __('${fileName}.${keyName}') }}`);
                     addToLanguageFile(selectedText as string,fileName as string,keyName as string);
                 });
 
