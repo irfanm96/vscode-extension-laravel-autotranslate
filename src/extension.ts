@@ -125,11 +125,11 @@ function addToLanguageFile(selectedText: string, fileName: string,keyName: strin
 		var resourceContent = readFileSync(resourceFilePath, 'utf8');
 
 		// check duplicates
-		if (!resourceContent.includes(`"${selectedText}"`))
+		if (!resourceContent.includes(`'${selectedText}'`))
 		{
 			var endOfArray = resourceContent.indexOf(']');
 			var newContent = resourceContent.slice(0, endOfArray-2); // assuming there is a carriage return before the ]
-			newContent += `,\r\n\t'${keyName}' => '${selectedText}'\r\n];`;
+			newContent += `',\r\n\t'${keyName}' => '${selectedText}'\r\n];`;
 
 			writeFileSync(resourceFilePath, newContent);
 		}
