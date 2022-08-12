@@ -7,6 +7,10 @@ import { writeFileSync, readFileSync, existsSync } from 'fs';
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
+
+    const state = stateManager(context)
+
+
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "laravel-autotranslate" is now active!');
@@ -25,7 +29,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 			selectedText = removeNewLines(selectedText);
 
-            getFileName().then((fileName) =>  {
+            getFileName(state).then((fileName) =>  {
                 getKeyName().then((keyName)=>{
                     replaceText(`{{ __('${fileName}.${keyName}') }}`);
                     addToLanguageFile(selectedText as string,fileName as string,keyName as string);
@@ -79,12 +83,29 @@ function replaceText(replacedText: string) {
 	});
 }
 
-async function getFileName() {
+function stateManager (context:any) {
+    return {
+      read,
+      write
+    }
+
+    function read () {
+      return {
+        lastPaletteTitleApplied: context.globalState.get('file-name')
+      }
+    }
+
+    async function write (newState:any) {
+      await context.globalState.update('file-name', newState);
+    }
+  }
+
+async function getFileName(state: any) {
 
     const fileName = await vscode.window.showInputBox({
         placeHolder: "File Name",
         prompt: "Enter File Name",
-        value: ''
+        value: state.read()
     });
 
     if(fileName === ''){
@@ -93,6 +114,7 @@ async function getFileName() {
       }
 
     if(fileName !== undefined){
+        await state.write(fileName);
         return fileName;
     }
 }
