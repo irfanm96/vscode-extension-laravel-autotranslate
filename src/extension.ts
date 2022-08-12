@@ -90,9 +90,7 @@ function stateManager (context:any) {
     }
 
     function read () {
-      return {
-        lastPaletteTitleApplied: context.globalState.get('file-name')
-      }
+       context.globalState.get('file-name','')
     }
 
     async function write (newState:any) {
