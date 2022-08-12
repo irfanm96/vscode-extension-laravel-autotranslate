@@ -93,7 +93,7 @@ async function getFileName() {
       }
 
     if(fileName !== undefined){
-        return fileName+".php";
+        return fileName;
     }
 }
 async function getKeyName() {
@@ -118,7 +118,7 @@ function addToLanguageFile(selectedText: string, fileName: string,keyName: strin
 	const editor = vscode.window.activeTextEditor;
 	let projectFolder = vscode.workspace.getWorkspaceFolder(editor?.document.uri as vscode.Uri);
 	var resourcesPath = projectFolder?.uri.fsPath + "/lang/en/";
-	var resourceFilePath = resourcesPath + fileName;
+	var resourceFilePath = resourcesPath + fileName + '.php';
 
 	if (existsSync(resourceFilePath))
 	{
