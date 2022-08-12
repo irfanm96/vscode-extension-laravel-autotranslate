@@ -51,7 +51,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 			selectedText = removeNewLines(selectedText);
 
-			replaceText(`__('messages.${selectedText}')`);
+			replaceText(`{{ __('messages.${selectedText}') }}`);
 
 			addToLanguageFile(selectedText as string,'a','a');
 		}
