@@ -25,9 +25,14 @@ export function activate(context: vscode.ExtensionContext) {
 
 			selectedText = removeNewLines(selectedText);
 
-			replaceText(`@lang('messages.${selectedText}')`);
-			
-			addToLanguageFile(selectedText as string);
+            getFileName().then((fileName) =>  {
+                console.log(fileName);
+                replaceText(`@lang('messages.${selectedText}')`);
+
+                addToLanguageFile(selectedText as string,fileName as string);
+            });
+
+
 		}
 	});
 
@@ -42,12 +47,12 @@ export function activate(context: vscode.ExtensionContext) {
 			selectedText = selectedText.replace(/^'|'$/g,'');
 			// remove first and last "
 			selectedText = selectedText.replace(/^"|"$/g,'');
-			
+
 			selectedText = removeNewLines(selectedText);
 
 			replaceText(`__('messages.${selectedText}')`);
-			
-			addToLanguageFile(selectedText as string);
+
+			addToLanguageFile(selectedText as string,'a');
 		}
 	});
 
@@ -73,12 +78,30 @@ function replaceText(replacedText: string) {
 	});
 }
 
-function addToLanguageFile(selectedText: string)
+async function getFileName() {
+
+    const searchQuery = await vscode.window.showInputBox({
+        placeHolder: "Search query",
+        prompt: "Search my snippets on Codever",
+        value: ''
+    });
+
+    if(searchQuery === ''){
+        console.log(searchQuery);
+        vscode.window.showErrorMessage('A search query is mandatory to execute this action');
+      }
+
+    if(searchQuery !== undefined){
+        return searchQuery+".php";
+    }
+}
+
+function addToLanguageFile(selectedText: string, fileName: string)
 {
 	const editor = vscode.window.activeTextEditor;
-	let projectFolder = vscode.workspace.getWorkspaceFolder(editor?.document.uri as vscode.Uri);	
-	var resourcesPath = projectFolder?.uri.fsPath + "\\resources\\lang\\en\\"; 
-	var resourceFilePath = resourcesPath + 'messages.php';
+	let projectFolder = vscode.workspace.getWorkspaceFolder(editor?.document.uri as vscode.Uri);
+	var resourcesPath = projectFolder?.uri.fsPath + "\\lang\\en\\";
+	var resourceFilePath = resourcesPath + fileName;
 
 	if (existsSync(resourceFilePath))
 	{
@@ -90,7 +113,7 @@ function addToLanguageFile(selectedText: string)
 			var endOfArray = resourceContent.indexOf(']');
 			var newContent = resourceContent.slice(0, endOfArray-2); // assuming there is a carriage return before the ]
 			newContent += `,\r\n\t"${selectedText}" => "${selectedText}"\r\n];`;
-			
+
 			writeFileSync(resourceFilePath, newContent);
 		}
 	}
