@@ -123,7 +123,7 @@ async function getKeyName(selectedText: string) {
     const keyName = await vscode.window.showInputBox({
         placeHolder: "Key Name",
         prompt: "Enter key name of the string",
-        value: selectedText.match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g).map(x => x.toLowerCase()).join('-')
+        value: selectedText?.match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g)?.map(x => x.toLowerCase()).join('-')
     });
 
     if(keyName === ''){
