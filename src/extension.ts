@@ -27,7 +27,7 @@ export function activate(context: vscode.ExtensionContext) {
 			selectedText = removeNewLines(selectedText);
 
             getFileName(context).then((fileName) =>  {
-                getKeyName().then((keyName)=>{
+                getKeyName(selectedText).then((keyName)=>{
                     replaceText(`{{ __('${fileName}.${keyName}') }}`);
                     addToLanguageFile(selectedText as string,fileName as string,keyName as string);
                 });
@@ -118,12 +118,12 @@ async function getFileName(context: any) {
         return fileName;
     }
 }
-async function getKeyName() {
+async function getKeyName(selectedText: string) {
 
     const keyName = await vscode.window.showInputBox({
         placeHolder: "Key Name",
         prompt: "Enter key name of the string",
-        value: ''
+        value: selectedText.match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g).map(x => x.toLowerCase()).join('-')
     });
 
     if(keyName === ''){
